@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QGraphicsBlurEffect>
+#include <QDesktopWidget>
 #include <QInputDialog>
 #include <QColorDialog>
 #include <QPushButton>
@@ -70,6 +71,13 @@ private:
             QString background = realStSh;
             color.truncate(color.indexOf('\n')+1);
             background.remove(0, background.indexOf('\n')+1);
+
+            int c = 0, l = 0;
+            while(c != 3)
+                if(background[l++] == ',')
+                    c++;
+            background.truncate(l);
+            background += "90);";
 
             winDialog->     setStyleSheet(background);
             label->         setStyleSheet("font: 16pt Comic Sans MS; font-weight: bold; qproperty-alignment: AlignCenter; background-color: rgb(255,255,255,0); " + color);
