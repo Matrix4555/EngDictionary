@@ -8,7 +8,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     //----------------
 
-    this->showMaximized();
+    const QDesktopWidget* desk = new QDesktopWidget;
+    QRect* square = new QRect;
+    *square = desk->availableGeometry();
+    delete desk;
+    this->move(square->x()-8, square->y());
+    delete square;
 
     connect(ui->pushButtonMondayChange,     SIGNAL(clicked()), this, SLOT(changeCard()));
     connect(ui->pushButtonTuesdayChange,    SIGNAL(clicked()), this, SLOT(changeCard()));
@@ -38,10 +43,10 @@ MainWindow::MainWindow(QWidget *parent)
     QFile stsh("mfstsh.dll");
     if(!stsh.exists() && stsh.open(QIODevice::WriteOnly | QIODevice::Text))     // default style sheet if the file doesn't exist
     {
-        stsh.write("1color: rgb(255,255,0);\n1background-color: rgb(255,0,127,100);\n2color: rgb(255,255,0);\n2background-color: rgb(255,0,127,100);\n"
-                   "3color: rgb(255,255,0);\n3background-color: rgb(255,0,127,100);\n4color: rgb(255,255,0);\n4background-color: rgb(255,0,127,100);\n"
-                   "5color: rgb(255,255,0);\n5background-color: rgb(255,0,127,100);\n6color: rgb(255,255,0);\n6background-color: rgb(255,0,127,100);\n"
-                   "7color: rgb(255,255,0);\n7background-color: rgb(255,0,127,100);\n#color: rgb(255,255,0);\n#background-color: rgb(255,0,127,100);\n");
+        stsh.write("1color: rgb(255,255,0);\n1background-color: rgb(0,0,127,150);\n2color: rgb(255,255,0);\n2background-color: rgb(0,0,127,150);\n"
+                   "3color: rgb(255,255,0);\n3background-color: rgb(0,0,127,150);\n4color: rgb(255,255,0);\n4background-color: rgb(0,0,127,150);\n"
+                   "5color: rgb(255,255,0);\n5background-color: rgb(0,0,127,150);\n6color: rgb(255,255,0);\n6background-color: rgb(0,0,127,150);\n"
+                   "7color: rgb(255,255,0);\n7background-color: rgb(0,0,127,150);\n#color: rgb(255,255,0);\n#background-color: rgb(0,0,127,150);\n");
         stsh.close();
     }
     if(stsh.open(QIODevice::ReadOnly | QIODevice::Text))
