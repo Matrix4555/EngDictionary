@@ -33,8 +33,8 @@ trainingMode::trainingMode(QWidget *parent) :
 
     QPushButton* start = new QPushButton(this);
     start->setGeometry(ui->lineEditCheck->geometry());
-    start->setStyleSheet("QPushButton{background-color: rgba(255, 51, 0, 100); color: rgb(0, 210, 255); font: 25pt Comic Sans MS; font-weight: bold}\n"
-                         "QPushButton::hover{background-color: rgba(255, 51, 0, 150)}");
+    start->setStyleSheet("QPushButton{background-color: rgb(0, 0, 127, 150); color: rgb(0, 210, 255); font: 25pt Comic Sans MS; font-weight: bold}\n"
+                         "QPushButton::hover{color: rgb(255, 51, 0)}");
     start->setText("Start Training!");
     start->setVisible(true);
 
@@ -48,13 +48,25 @@ trainingMode::trainingMode(QWidget *parent) :
         ui->radioButtonEndAndRus->  setEnabled(true);
         ui->radioButtonEng->        setEnabled(true);
         ui->radioButtonRus->        setEnabled(true);
-        ui->lineEditCheck->         setVisible(true);
         ui->pushButtonCheck->       setDefault(true);
-        delete start;
-        sizeOfBase*=2;  // 1 word with translation = 1 eng word + 1 rus word
+        ui->lineEditCheck->         setVisible(true);
+
+        sizeOfBase*=2;      // 1 word with translation = 1 eng word + 1 rus word
         ui->labelEntireNumber->setText('/' + QString::number(sizeOfBase));
+        timer->start(1000);
         nextWord();
+        delete start;
     });
+
+    timer = new QTimer;
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateTime()));
+
+    QLabel* l[3] = { ui->labelCountText, ui->labelCountWords, ui->labelEntireNumber };
+    for(int i=0; i<3; i++)
+        l[i]->setToolTip("If the number of words you've translated is bigger then you entered improper\n"
+                         "translation sometimes, but if smaller then you skipped some words or selected\n"
+                         "an only-language point. If the number is equal to general amount of words then\n"
+                         "you didn't have any mistakes and didn't use an only-language point.");
 }
 
 trainingMode::~trainingMode()
@@ -129,20 +141,55 @@ void trainingMode::nextWord()
         this->close();
     }
 
+    clarifyFontSize(show);
     dontRepeatBase.push_back(show);
     dontRepeatNow = "";
+    ui->labelWord->setText(show);
+}
+
+void trainingMode::updateTime()
+{
+    if(++s > 59)
+    {
+        m++;
+        s = 0;
+    }
+    if(s<10 && m<10)
+        ui->labelTime->setText("Time: 0"+QString::number(m)+":0"+QString::number(s));
+    else if(m<10)
+        ui->labelTime->setText("Time: 0"+QString::number(m)+":"+QString::number(s));
+    else if(s<10)
+        ui->labelTime->setText("Time: "+QString::number(m)+":0"+QString::number(s));
+    else
+        ui->labelTime->setText("Time: "+QString::number(m)+":"+QString::number(s));
+}
+
+void trainingMode::clarifyFontSize(QString& show)
+{
+    auto separateAndSetSize = [this, &show](const int size)
+    {
+        int a = show.indexOf(',');
+        int b = show.indexOf(',', a+1);
+
+        QString left = show;
+        QString right = show;
+        left.truncate(b);
+        right.remove(0, b+1);
+
+        if(show[b+1] == ' ')
+            show.remove(b+1, 1);
+        show.insert(b+1, '\n');
+
+        if(left.size() > 23 || right.size() > 23)
+            ui->labelWord->setFont(QFont("Comic Sans MS", size-5, QFont::Bold));
+        else
+            ui->labelWord->setFont(QFont("Comic Sans MS", size, QFont::Bold));
+    };
 
     if(show.size() > 35)
     {
         if(show.count(',') >= 2)
-        {
-            int a = show.indexOf(',');
-            int b = show.indexOf(',', a+1);
-            if(show[b+1] == ' ')
-                show.remove(b+1, 1);
-            show.insert(b+1, '\n');
-            ui->labelWord->setFont(QFont("Comic Sans MS", 20, QFont::Bold));
-        }
+            separateAndSetSize(20);
         else
             ui->labelWord->setFont(QFont("Comic Sans MS", 15, QFont::Bold));
     }
@@ -157,14 +204,7 @@ void trainingMode::nextWord()
             ui->labelWord->setFont(QFont("Comic Sans MS", 25, QFont::Bold));
         }
         else if(show.count(',') >= 2)
-        {
-            int a = show.indexOf(',');
-            int b = show.indexOf(',', a+1);
-            if(show[b+1] == ' ')
-                show.remove(b+1, 1);
-            show.insert(b+1, '\n');
-            ui->labelWord->setFont(QFont("Comic Sans MS", 25, QFont::Bold));
-        }
+            separateAndSetSize(25);
         else
             ui->labelWord->setFont(QFont("Comic Sans MS", 17, QFont::Bold));
     }
@@ -172,8 +212,6 @@ void trainingMode::nextWord()
         ui->labelWord->setFont(QFont("Comic Sans MS", 20, QFont::Bold));
     else
         ui->labelWord->setFont(QFont("Comic Sans MS", 25, QFont::Bold));
-
-    ui->labelWord->setText(show);
 }
 
 int trainingMode::amountOfPulled(const QString lang)
@@ -194,9 +232,14 @@ int trainingMode::amountOfPulled(const QString lang)
 
 void trainingMode::refreshTraining()
 {
-    QMessageBox::information(this, "Info", "You've repeated all of words.\nReset of training occurred.");
+    timer->stop();
+    QMessageBox::information(this, "Info", "You've repeated all of words.\nReset of training occurred.\nTime passed: "+QString::number(m)+" m "+QString::number(s)+" s.");
     ui->labelCountWords->setText(QString::number(count=0));
+    ui->labelTime->setText("Time: 00:00");
+    s = 0;
+    m = 0;
     dontRepeatBase.clear();
+    timer->start();
 }
 
 void trainingMode::on_pushButtonCheck_clicked()
@@ -330,17 +373,28 @@ void trainingMode::on_pushButtonSkip_clicked()
 
 void trainingMode::on_pushButtonStartOver_clicked()
 {
-    QMessageBox::StandardButton answer = QMessageBox::question(this, "Start Over", "Are you sure? Non-repeating words will be reseted.", QMessageBox::Yes | QMessageBox::No);
+    timer->stop();
+    QMessageBox::StandardButton answer = QMessageBox::question(this, "Start Over", "Are you sure? Non-repeating words\nwill be reseted.", QMessageBox::Yes | QMessageBox::No);
     if(answer == QMessageBox::Yes)
     {
         ui->labelCountWords->setText(QString::number(count=0));
         ui->lineEditCheck->setText("");
         dontRepeatBase.clear();
         nextWord();
+
+        ui->labelTime->setText("Time: 00:00");
+        s = 0;
+        m = 0;
     }
+    timer->start();
 }
 
 void trainingMode::on_pushButtonSetImg_clicked()
 {
+    timer->stop();
+
     setImage(this, QSize(960,540),"mfimgt.dll");
+
+    if(ui->labelWord->text() != "press it -->")
+        timer->start();
 }
