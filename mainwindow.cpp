@@ -15,6 +15,10 @@ MainWindow::MainWindow(QWidget *parent)
     this->move(square->x()-8, square->y());
     delete square;
 
+    ui->pushButtonInfo->setStyleSheet("QPushButton{background-color: rgb(255,255,255,0);} QPushButton::hover{background-color: rgb(153, 204, 255, 70);}");
+    ui->pushButtonInfo->setIcon(QPixmap(":/img/images/info.png"));
+    ui->pushButtonInfo->setIconSize(QSize(30, 30));
+
     connect(ui->pushButtonMondayChange,     SIGNAL(clicked()), this, SLOT(changeCard()));
     connect(ui->pushButtonTuesdayChange,    SIGNAL(clicked()), this, SLOT(changeCard()));
     connect(ui->pushButtonWednesdayChange,  SIGNAL(clicked()), this, SLOT(changeCard()));
@@ -139,9 +143,10 @@ void MainWindow::changeCard()
         settingButton[i]->setVisible(true);
     }
 
-    // 3 lambdas for setting-buttons
+    // 3 lambdas for setting-buttons:
     //-----------------------------------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------------------------------
+
     auto closeEditor = [=]()    // "cancel" button
     {
         delete cardSettings;
@@ -154,8 +159,10 @@ void MainWindow::changeCard()
         card->      setVisible(true);
         button->    setVisible(true);
     };
+
     //-----------------------------------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------------------------------
+
     auto changeColor = [=]()    // "color" and "background" buttons
     {
         QColorDialog select(this);
@@ -230,8 +237,10 @@ void MainWindow::changeCard()
             file.close();
         }
     };
+
     //-----------------------------------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------------------------------
+
     auto applyChanges = [=]()   // "apply" button
     {
         const QString inputted = input->toPlainText();
@@ -356,6 +365,7 @@ void MainWindow::changeCard()
 
         closeEditor();
     };
+
     //-----------------------------------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -396,8 +406,9 @@ void MainWindow::changeCard()
         menuStSh.close();
     }
 
-    recommendations->setGeometry(20, 360, 230, 465);
-    recommendations->setStyleSheet(*menucolor + "font: 13pt Comic Sans MS");
+    recommendations->setGeometry(ui->labelMonday->x(), ui->labelFriday->y(), 230, 465);
+    recommendations->setStyleSheet("QListWidget{"+ *menucolor + "font: 12pt Comic Sans MS;} QListWidget::item::selected{" + *menucolor + "border: 1px solid red;}");
+    recommendations->setFocusPolicy(Qt::NoFocus);
     recommendations->setWordWrap(true);
     delete menucolor;
 
@@ -824,7 +835,7 @@ void MainWindow::on_pushButtonMenuColor_clicked()
         file.close();
     }
 
-    QString stsh = styleSheetForButton(newColor[0] + newColor[1]);
+    const QString stsh = styleSheetForButton(newColor[0] + newColor[1]);
     ui->pushButtonWords->       setStyleSheet(stsh);
     ui->pushButtonMenuColor->   setStyleSheet(stsh);
     ui->pushButtonSetImg->      setStyleSheet(stsh);
@@ -875,4 +886,10 @@ void MainWindow::on_pushButtonGetCards_clicked()
         return;
     else
         mainImg.save(path + "/cards.png");
+}
+
+void MainWindow::on_pushButtonInfo_clicked()
+{
+    QMessageBox::information(this, "About", "EngDictionary 1.02\n\n"
+                                            "Windows teaching application that helps to learn English words with interesting and\ncomfortable functions.");
 }
