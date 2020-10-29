@@ -1,8 +1,6 @@
 #include "wordsmode.h"
 #include "ui_wordsmode.h"
 
-#include <QDebug>
-
 wordsMode::wordsMode(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::wordsMode)
@@ -24,6 +22,7 @@ wordsMode::wordsMode(QWidget *parent) :
 
     ui->pushButtonTranslator->setIcon(QPixmap(":/img/images/googletranslate.png"));
     ui->pushButtonTranslator->setIconSize(QSize(205, 40));
+    ui->listWidget->setFocusPolicy(Qt::NoFocus);
 
     refreshList();
 }
@@ -224,7 +223,7 @@ void wordsMode::on_pushButtonFind_clicked()
     win.setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
     win.setStyleSheet("QDialog{background-image: url(0); background-color: rgb(0, 85, 127)}"
                        "QLabel{font: 16pt Comic Sans MS; font-weight: bold; color: rgb(255, 255, 0); background-color: rgb(0, 85, 127); qproperty-alignment: AlignCenter}"
-                       "QLineEdit{font: 20pt Comic Sans MS; font-weight: bold; color: rgb(0, 255, 0); background-color: rgb(0, 255, 0, 50)}"
+                       "QLineEdit{font: 20pt Comic Sans MS; color: rgb(0, 255, 0); background-color: rgb(0, 255, 0, 50)}"
                        "QPushButton{font: 15pt Comic Sans MS; font-weight: bold; color: rgb(255, 255, 0); background-color: rgb(0, 255, 0, 50)}"
                        "QPushButton::hover{background-color: rgba(0, 255, 0, 100)}");
     win.setLabelText("Enter what to look for");
@@ -308,7 +307,7 @@ QString wordsMode::changeWord(const QString word, const QString version)
     win.setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
     win.setStyleSheet("QDialog{background-image: url(0); background-color: rgb(0, 85, 127)}"
                        "QLabel{font: 16pt Comic Sans MS; font-weight: bold; color: rgb(255, 255, 0); background-color: rgb(0, 85, 127); qproperty-alignment: AlignCenter}"
-                       "QLineEdit{font: 20pt Comic Sans MS; font-weight: bold; color: rgb(0, 255, 0); background-color: rgb(0, 255, 0, 50)}"
+                       "QLineEdit{font: 20pt Comic Sans MS; color: rgb(0, 255, 0); background-color: rgb(0, 255, 0, 50)}"
                        "QPushButton{font: 15pt Comic Sans MS; font-weight: bold; color: rgb(255, 255, 0); background-color: rgb(0, 255, 0, 50)}"
                        "QPushButton::hover{background-color: rgba(0, 255, 0, 100)}");
     win.setLabelText("Change the " +version+ " version");
