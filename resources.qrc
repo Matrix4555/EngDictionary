@@ -6,5 +6,6 @@
         <file>images/fillbycards.png</file>
         <file>images/googletranslate logo.png</file>
         <file>images/cross.png</file>
+        <file>images/info.png</file>
     </qresource>
 </RCC>
