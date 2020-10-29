@@ -162,6 +162,7 @@ private slots:
     void on_pushButtonSetImg_clicked();
     void on_pushButtonMenuColor_clicked();
     void on_pushButtonGetCards_clicked();
+    void on_pushButtonInfo_clicked();
 };
 
 #endif // MAINWINDOW_H
