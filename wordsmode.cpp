@@ -467,6 +467,7 @@ void wordsMode::on_pushButtonRunNote_clicked()
     QLineEdit* line =   new QLineEdit(win);
     QPushButton* exit = new QPushButton(win);
 
+    win->   setWindowTitle("NoteLine");
     win->   setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint);
     win->   setMinimumSize(195, 35);
     win->   setMaximumSize(195, 35);
