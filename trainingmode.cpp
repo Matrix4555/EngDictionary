@@ -141,9 +141,10 @@ void trainingMode::nextWord()
         this->close();
     }
 
-    clarifyFontSize(show);
     dontRepeatBase.push_back(show);
     dontRepeatNow = "";
+
+    clarifyFontSize(show);
     ui->labelWord->setText(show);
 }
 
