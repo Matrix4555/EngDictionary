@@ -890,6 +890,6 @@ void MainWindow::on_pushButtonGetCards_clicked()
 
 void MainWindow::on_pushButtonInfo_clicked()
 {
-    QMessageBox::information(this, "About", "EngDictionary 1.02\n\n"
-                                            "Windows teaching application that helps to learn English words with interesting and\ncomfortable functions.");
+    QMessageBox::information(this, "About", "EngDictionary 1.03\n\n"
+                                            "Windows teaching application\nthat helps to learn English\nwords with interesting and\ncomfortable functions.");
 }
