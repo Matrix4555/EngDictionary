@@ -2,10 +2,10 @@
 #include "ui_wordsmode.h"
 
 wordsMode::wordsMode(const bool isFullhd, QWidget *parent) :
-    fullHd(isFullhd),
     QDialog(parent),
     ui(new Ui::wordsMode),
-    rit(nullptr)
+    rit(nullptr),
+    fullHd(isFullhd)
 {
     ui->setupUi(this);
     //----------------
@@ -529,7 +529,7 @@ void wordsMode::on_pushButtonCrib_clicked()
     QListWidget* list =     new QListWidget(crib);
 
     crib->  setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
-    crib->  setGeometry(1450,62,200,320);
+    crib->  setGeometry(this->x() + this->width() + 5, this->y() + 7, 200, 320);
     crib->  setMinimumSize(200, 320);
     crib->  setMaximumSize(200, 320);
     del->   setGeometry(3,3,171,20);
