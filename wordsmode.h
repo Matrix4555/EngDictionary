@@ -26,7 +26,7 @@ class wordsMode : public QDialog
     Q_OBJECT
 
 public:
-    explicit wordsMode(QWidget *parent = nullptr);
+    explicit wordsMode(const bool isFullHd, QWidget *parent = nullptr);
     ~wordsMode();
 
 private:
@@ -35,6 +35,7 @@ private:
 
     ResultInThread* rit;            // for delay of a result after some action
     QMap<QString, QString> list;
+    const bool fullHd;
     void refreshList();
     void showResult(const QString, const QString);
     QString changeWord(const QString, const QString);

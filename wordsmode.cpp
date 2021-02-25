@@ -1,7 +1,8 @@
 #include "wordsmode.h"
 #include "ui_wordsmode.h"
 
-wordsMode::wordsMode(QWidget *parent) :
+wordsMode::wordsMode(const bool isFullhd, QWidget *parent) :
+    fullHd(isFullhd),
     QDialog(parent),
     ui(new Ui::wordsMode),
     rit(nullptr)
@@ -24,6 +25,18 @@ wordsMode::wordsMode(QWidget *parent) :
     ui->pushButtonTranslator->setIcon(QPixmap(":/img/images/googletranslate.png"));
     ui->pushButtonTranslator->setIconSize(QSize(205, 40));
     ui->listWidget->setFocusPolicy(Qt::NoFocus);
+
+    if(!fullHd)
+    {
+        this->setMinimumSize(960, 660);
+        this->setMaximumSize(960, 660);
+        this->resize(960, 660);
+        ui->listWidget->resize(270, 620);
+
+        ui->pushButtonCrib->        setGeometry(735, 70, 100, 40);
+        ui->pushButtonRunNote->     setGeometry(840, 70, 100, 40);
+        ui->pushButtonSetImg->      setGeometry(840, 600, 100, 40);
+    }
 
     refreshList();
 }

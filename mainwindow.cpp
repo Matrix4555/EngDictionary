@@ -755,7 +755,7 @@ void MainWindow::on_pushButtonTraining_clicked()
 
 void MainWindow::on_pushButtonWords_clicked()
 {
-    wordsMode window;
+    wordsMode window(fullHd);
     window.exec();
     QLabel* card[7] = { ui->labelMonday, ui->labelTuesday, ui->labelWednesday, ui->labelThursday, ui->labelFriday, ui->labelSaturday, ui->labelSunday };
     setTextToCards(card);       // there may be changes for the cards from words management window
