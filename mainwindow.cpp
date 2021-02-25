@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     QSize resolution = QGuiApplication::primaryScreen()->size();
     fullHd = resolution.width() < 1920 && resolution.height() < 1080? false : true;
+    // hi laptop )
     this->showMaximized();
 
     ui->pushButtonInfo->setStyleSheet("QPushButton{background-color: rgba(255,255,255,0);} QPushButton::hover{background-color: rgba(153, 204, 255, 70);}");
@@ -890,19 +891,15 @@ void MainWindow::on_pushButtonGetCards_clicked()
     label.setFont(cards[0]->font());
 
     auto tempInvisible = [this, cards, &label](const bool invis)->void {
-        label.show();
+        invis? label.show() : label.hide();
         for(auto card : cards)
-            card->hide();
-        for(auto btn :  {ui->pushButtonMondayChange, ui->pushButtonTuesdayChange, ui->pushButtonWednesdayChange,
-            ui->pushButtonThursdayChange, ui->pushButtonFridayChange, ui->pushButtonSaturdayChange, ui->pushButtonSundayChange})
-            btn->hide();
+            invis? card->hide() : card->show();
+        for(auto btn :  {ui->pushButtonMondayChange, ui->pushButtonTuesdayChange, ui->pushButtonWednesdayChange, ui->pushButtonThursdayChange,
+                            ui->pushButtonFridayChange, ui->pushButtonSaturdayChange, ui->pushButtonSundayChange})
+            invis? btn->hide() : btn->show();
     };
 
-    label.show();////////////////////////////////
-    for(auto card : cards)
-        card->hide();
-    for(auto btn : buttons)
-        btn->hide();
+    tempInvisible(true);
 
     for(int i = 0, shift = 0; i < 7; i++, shift += 240)
     {
@@ -917,15 +914,10 @@ void MainWindow::on_pushButtonGetCards_clicked()
         painter.drawPixmap(QPoint(0, shift), QPixmap(this->grab(label.geometry())));
     }
 
-    label.hide();
-    for(auto card : cards)
-        card->show();
-    for(auto btn : buttons)
-        btn->show();
-
+    tempInvisible(false);
     painter.end();
-    QString path = QFileDialog::getExistingDirectory(this, "Select Location", "/", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
+    QString path = QFileDialog::getExistingDirectory(this, "Select Location", "/", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     if(path.isEmpty())
         return;
     else
