@@ -3,7 +3,8 @@
 
 wordsMode::wordsMode(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::wordsMode)
+    ui(new Ui::wordsMode),
+    rit(nullptr)
 {
     ui->setupUi(this);
     //----------------
@@ -72,13 +73,13 @@ void wordsMode::showResult(const QString color, const QString result)
     ui->labelResult->setText(result);
     ui->labelResult->show();
 
-    QTime timer;
-    timer.start();
-    for(;timer.elapsed() < 1500;)
-        qApp->processEvents();
-
-    ui->labelResult->hide();
-    ui->labelResult->setText("");
+    rit = new ResultInThread();
+    connect(rit, &ResultInThread::hideResult, this, [this]() {          // delay a result for 2 sec
+        ui->labelResult->hide();
+        ui->labelResult->setText("");
+    });
+    connect(rit, &ResultInThread::finished, rit, &QObject::deleteLater);
+    rit->start();
 }
 
 void wordsMode::on_pushButtonTranslate_clicked()
@@ -223,8 +224,8 @@ void wordsMode::on_pushButtonFind_clicked()
     win.setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
     win.setStyleSheet("QDialog{background-image: url(0); background-color: rgb(0, 85, 127)}"
                        "QLabel{font: 16pt Comic Sans MS; font-weight: bold; color: rgb(255, 255, 0); background-color: rgb(0, 85, 127); qproperty-alignment: AlignCenter}"
-                       "QLineEdit{font: 20pt Comic Sans MS; color: rgb(0, 255, 0); background-color: rgb(0, 255, 0, 50)}"
-                       "QPushButton{font: 15pt Comic Sans MS; font-weight: bold; color: rgb(255, 255, 0); background-color: rgb(0, 255, 0, 50)}"
+                       "QLineEdit{font: 20pt Comic Sans MS; color: rgb(0, 255, 0); background-color: rgba(0, 255, 0, 50)}"
+                       "QPushButton{font: 15pt Comic Sans MS; font-weight: bold; color: rgb(255, 255, 0); background-color: rgba(0, 255, 0, 50)}"
                        "QPushButton::hover{background-color: rgba(0, 255, 0, 100)}");
     win.setLabelText("Enter what to look for");
     win.setOkButtonText("Find");
@@ -307,8 +308,8 @@ QString wordsMode::changeWord(const QString word, const QString version)
     win.setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
     win.setStyleSheet("QDialog{background-image: url(0); background-color: rgb(0, 85, 127)}"
                        "QLabel{font: 16pt Comic Sans MS; font-weight: bold; color: rgb(255, 255, 0); background-color: rgb(0, 85, 127); qproperty-alignment: AlignCenter}"
-                       "QLineEdit{font: 20pt Comic Sans MS; color: rgb(0, 255, 0); background-color: rgb(0, 255, 0, 50)}"
-                       "QPushButton{font: 15pt Comic Sans MS; font-weight: bold; color: rgb(255, 255, 0); background-color: rgb(0, 255, 0, 50)}"
+                       "QLineEdit{font: 20pt Comic Sans MS; color: rgb(0, 255, 0); background-color: rgba(0, 255, 0, 50)}"
+                       "QPushButton{font: 15pt Comic Sans MS; font-weight: bold; color: rgb(255, 255, 0); background-color: rgba(0, 255, 0, 50)}"
                        "QPushButton::hover{background-color: rgba(0, 255, 0, 100)}");
     win.setLabelText("Change the " +version+ " version");
     win.setOkButtonText("Apply");

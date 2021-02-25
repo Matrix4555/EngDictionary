@@ -8,16 +8,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     //----------------
 
-    const QDesktopWidget* desk = new QDesktopWidget;
-    QRect* square = new QRect;
-    *square = desk->availableGeometry();
-    delete desk;
-    this->move(square->x()-8, square->y());
-    delete square;
+    this->showMaximized();
 
-    ui->pushButtonInfo->setStyleSheet("QPushButton{background-color: rgb(255,255,255,0);} QPushButton::hover{background-color: rgb(153, 204, 255, 70);}");
+    ui->pushButtonInfo->setStyleSheet("QPushButton{background-color: rgba(255,255,255,0);} QPushButton::hover{background-color: rgba(153, 204, 255, 70);}");
     ui->pushButtonInfo->setIcon(QPixmap(":/img/images/info.png"));
-    ui->pushButtonInfo->setIconSize(QSize(30, 30));
+    ui->pushButtonInfo->setIconSize(QSize(37, 37));
 
     connect(ui->pushButtonMondayChange,     SIGNAL(clicked()), this, SLOT(changeCard()));
     connect(ui->pushButtonTuesdayChange,    SIGNAL(clicked()), this, SLOT(changeCard()));
@@ -47,10 +42,10 @@ MainWindow::MainWindow(QWidget *parent)
     QFile stsh("mfstsh.dll");
     if(!stsh.exists() && stsh.open(QIODevice::WriteOnly | QIODevice::Text))     // default style sheet if the file doesn't exist
     {
-        stsh.write("1color: rgb(255,255,0);\n1background-color: rgb(0,0,127,150);\n2color: rgb(255,255,0);\n2background-color: rgb(0,0,127,150);\n"
-                   "3color: rgb(255,255,0);\n3background-color: rgb(0,0,127,150);\n4color: rgb(255,255,0);\n4background-color: rgb(0,0,127,150);\n"
-                   "5color: rgb(255,255,0);\n5background-color: rgb(0,0,127,150);\n6color: rgb(255,255,0);\n6background-color: rgb(0,0,127,150);\n"
-                   "7color: rgb(255,255,0);\n7background-color: rgb(0,0,127,150);\n#color: rgb(255,255,0);\n#background-color: rgb(0,0,127,150);\n");
+        stsh.write("1color: rgb(255,255,0);\n1background-color: rgba(0,0,127,150);\n2color: rgb(255,255,0);\n2background-color: rgba(0,0,127,150);\n"
+                   "3color: rgb(255,255,0);\n3background-color: rgba(0,0,127,150);\n4color: rgb(255,255,0);\n4background-color: rgba(0,0,127,150);\n"
+                   "5color: rgb(255,255,0);\n5background-color: rgba(0,0,127,150);\n6color: rgb(255,255,0);\n6background-color: rgba(0,0,127,150);\n"
+                   "7color: rgb(255,255,0);\n7background-color: rgba(0,0,127,150);\n#color: rgb(255,255,0);\n#background-color: rgba(0,0,127,150);\n");
         stsh.close();
     }
     if(stsh.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -123,22 +118,26 @@ void MainWindow::changeCard()
     int day;
     clarifyDay(button, card, weekday, day);
 
-    QWidget* cardSettings =             new QWidget(this);
     QListWidget* recommendations =      new QListWidget(this);
     QTextEdit* input =                  new QTextEdit(this);
-    QPushButton* settingButton[4] = {   new QPushButton(cardSettings), new QPushButton(cardSettings),
-                                        new QPushButton(cardSettings), new QPushButton(cardSettings) };
-
-    cardSettings->setGeometry(card->x(), button->y(), card->width(), button->height());
+    QPushButton* settingButton[4] = {   new QPushButton(), new QPushButton(),
+                                        new QPushButton(), new QPushButton() };
 
     settingButton[0]->setText("Cancel");
     settingButton[1]->setText("Background");
     settingButton[2]->setText("Color");
     settingButton[3]->setText("Apply");
 
-    for(int i=0, s=0; i<4 ; i++, s+=115)
+    auto* getOriginalLayout = new std::function<QHBoxLayout*()>;        // grab a layout of the changing card
+    *getOriginalLayout = [day, this]() {
+        return day < 5? ui->Layout_TopCards : ui->Layout_BottomCards;
+    };
+    QVBoxLayout* currentLayout = (*getOriginalLayout)()->findChild<QVBoxLayout*>("Layout_Day" + QString::number(day));
+    delete getOriginalLayout;
+
+    for(int i = 0; i < 4 ; i++)
     {
-        settingButton[i]->setGeometry(0+s, 0, 110, button->height());
+        dynamic_cast<QHBoxLayout*>(currentLayout->children()[1])->insertWidget(i, settingButton[i]);
         settingButton[i]->setStyleSheet(styleSheetForButton(card->styleSheet(), " font: 15pt Comic Sans MS; "));
         settingButton[i]->setVisible(true);
     }
@@ -149,9 +148,10 @@ void MainWindow::changeCard()
 
     auto closeEditor = [=]()    // "cancel" button
     {
-        delete cardSettings;
         delete recommendations;
         delete input;
+        for(auto btn : settingButton)
+            delete btn;
 
         setEnabledButtons(true);
 
@@ -184,7 +184,7 @@ void MainWindow::changeCard()
         {
             if((QPushButton*)sender() == settingButton[1])
             {
-                QString newColor = "background-color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+","+QString::number(a)+");\n";
+                QString newColor = "background-color: rgba("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+","+QString::number(a)+");\n";
 
                 while(!file.atEnd())
                 {
@@ -207,7 +207,7 @@ void MainWindow::changeCard()
             }
             else if((QPushButton*)sender() == settingButton[2])
             {
-                QString newColor = "color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+","+QString::number(a)+");\n";
+                QString newColor = "color: rgba("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+","+QString::number(a)+");\n";
 
                 while(!file.atEnd())
                 {
@@ -317,8 +317,8 @@ void MainWindow::changeCard()
 
         if(translationsForCard == "cancel")
         {
-            input->show();
             card->setVisible(false);
+            input->show();
             card->setText(*oldWords);
             delete oldWords;
             return;
@@ -379,11 +379,12 @@ void MainWindow::changeCard()
     weekday->       setVisible(false);
     card->          setVisible(false);
     button->        setVisible(false);
-    cardSettings->  setVisible(true);
 
-    input->setGeometry(card->geometry());
+    dynamic_cast<QVBoxLayout*>(currentLayout->children()[0])->addWidget(input);
+
     input->setStyleSheet(card->styleSheet() + "selection-background-color: green;");
     input->setFont(card->font());
+    input->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     input->setText(card->text());
 
     QTextCursor c = input->textCursor();    // text will get highlighted immediately
@@ -406,8 +407,8 @@ void MainWindow::changeCard()
         menuStSh.close();
     }
 
-    recommendations->setGeometry(ui->labelMonday->x(), ui->labelFriday->y(), 230, 465);
-    recommendations->setStyleSheet("QListWidget{"+ *menucolor + "font: 12pt Comic Sans MS;} QListWidget::item::selected{" + *menucolor + "border: 1px solid red;}");
+    recommendations->setGeometry(ui->labelMonday->x(), ui->labelFriday->y(), 220, ui->labelFriday->height());
+    recommendations->setStyleSheet("QListWidget{"+ *menucolor + "font: 12pt Comic Sans MS;} QListWidget::item::selected{" + *menucolor + "border: 1px solid red;} ");
     recommendations->setFocusPolicy(Qt::NoFocus);
     recommendations->setWordWrap(true);
     delete menucolor;
@@ -812,8 +813,8 @@ void MainWindow::on_pushButtonMenuColor_clicked()
         int r, g, b, a;
         color.getRgb(&r, &g, &b, &a);
 
-        if(i==0)    newColor[i++] = "color: rgb("               +QString::number(r)+","+QString::number(g)+","+QString::number(b)+","+QString::number(a)+");\n";
-        else        newColor[i++] = "background-color: rgb("    +QString::number(r)+","+QString::number(g)+","+QString::number(b)+","+QString::number(a)+");\n";
+        if(i==0)    newColor[i++] = "color: rgba("               +QString::number(r)+","+QString::number(g)+","+QString::number(b)+","+QString::number(a)+");\n";
+        else        newColor[i++] = "background-color: rgba("    +QString::number(r)+","+QString::number(g)+","+QString::number(b)+","+QString::number(a)+");\n";
     }
 
     QFile file("mfstsh.dll");
@@ -852,37 +853,52 @@ void MainWindow::on_pushButtonSetImg_clicked()
 
 void MainWindow::on_pushButtonGetCards_clicked()
 {
-    QLabel* card[7] = { ui->labelMonday, ui->labelTuesday, ui->labelWednesday, ui->labelThursday, ui->labelFriday, ui->labelSaturday, ui->labelSunday };
-
     QFile file("mfwk.dll");
     if(file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        QString* temp = new QString;
-        *temp = file.readAll();
+        QString temp =  file.readAll();
         file.close();
-
-        if(!temp->contains(QRegularExpression("[A-Za-z]")))
+        if(!temp.contains(QRegularExpression("[A-Za-z]")))
         {
-            delete temp;
             QMessageBox::information(this, "Info", "There are no words on the cards.\nPlease add words.");
             return;
         }
-        delete temp;
     }
 
+    QLabel* cards[7] = { ui->labelMonday, ui->labelTuesday, ui->labelWednesday, ui->labelThursday, ui->labelFriday, ui->labelSaturday, ui->labelSunday };
     QPixmap mainImg(":/img/images/fillbycards.png");
     QPainter painter(&mainImg);
+    QLabel label(this);
 
-    for(int i = 0, s = 0; i < 7; i++, s+=240)
+    label.resize(455, 240);
+    label.setAlignment(cards[0]->alignment());
+    label.setFont(cards[0]->font());
+
+    label.show();
+    for(auto card : cards)
+        card->hide();
+
+    for(int i = 0, shift = 0; i < 7; i++, shift += 240)
     {
-        QPixmap label = this->grab(card[i]->geometry());
-        painter.drawPixmap(QPoint(0, s), label);
+        if(this->width() < 1820)
+            label.move(cards[i]->x() - 20 - shift / 8, cards[i]->y());
+        else
+            label.move(cards[i]->x(), cards[i]->y());
+
+        label.setStyleSheet(cards[i]->styleSheet());
+        label.setFrameStyle(cards[i]->frameStyle());
+        label.setText(cards[i]->text());
+        painter.drawPixmap(QPoint(0, shift), QPixmap(this->grab(label.geometry())));
     }
+
+    label.hide();
+    for(auto card : cards)
+        card->show();
 
     painter.end();
     QString path = QFileDialog::getExistingDirectory(this, "Select Location", "/", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
-    if(path == 0)
+    if(path.isEmpty())
         return;
     else
         mainImg.save(path + "/cards.png");
@@ -890,6 +906,6 @@ void MainWindow::on_pushButtonGetCards_clicked()
 
 void MainWindow::on_pushButtonInfo_clicked()
 {
-    QMessageBox::information(this, "About", "EngDictionary 1.03\n\n"
+    QMessageBox::information(this, "About", "EngDictionary 1.04\n\n"
                                             "Windows teaching application\nthat helps to learn English\nwords with interesting and\ncomfortable functions.");
 }

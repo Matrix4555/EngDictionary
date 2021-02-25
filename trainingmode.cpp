@@ -33,7 +33,7 @@ trainingMode::trainingMode(QWidget *parent) :
 
     QPushButton* start = new QPushButton(this);
     start->setGeometry(ui->lineEditCheck->geometry());
-    start->setStyleSheet("QPushButton{background-color: rgb(0, 0, 127, 150); color: rgb(0, 210, 255); font: 25pt Comic Sans MS; font-weight: bold}\n"
+    start->setStyleSheet("QPushButton{background-color: rgba(0, 0, 127, 150); color: rgb(0, 210, 255); font: 25pt Comic Sans MS; font-weight: bold}\n"
                          "QPushButton::hover{color: rgb(255, 51, 0)}");
     start->setText("Start Training!");
     start->setVisible(true);

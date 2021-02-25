@@ -114,7 +114,7 @@ void setImage(QWidget* window, const QSize scale, const QString fileName)
 {
     QString path = QFileDialog::getOpenFileName(window, "Select Image", "/", "*.png *.jpg *.jpeg");
 
-    if(path == 0)
+    if(path.isEmpty())
         return;
 
     QImage(path).scaled(scale).save("temp.png");

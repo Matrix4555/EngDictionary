@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 #include <QGraphicsBlurEffect>
-#include <QDesktopWidget>
 #include <QInputDialog>
 #include <QColorDialog>
 #include <QPushButton>
@@ -12,11 +11,13 @@
 #include <QListWidget>
 #include <QTextEdit>
 #include <QPainter>
+#include <QScreen>
 #include <QWidget>
 #include <QImage>
 #include <QColor>
 #include <QLabel>
 #include <QFile>
+#include <functional>
 
 #include "globalfuncs.h"
 #include "trainingmode.h"
@@ -135,7 +136,7 @@ private:
             button[3]->             setGeometry(10, 103, 40, 40);
 
             button[3]->setText("");
-            button[3]->setStyleSheet("QPushButton{background-color: rgb(255, 255, 255, 0);}"
+            button[3]->setStyleSheet("QPushButton{background-color: rgba(255, 255, 255, 0);}"
                                      "QPushButton::hover{background-color: rgba(100, 161, 237, 100);}");
             button[3]->setIcon(QPixmap(":/img/images/googletranslate logo.png"));
             button[3]->setIconSize(QSize(32, 32));
