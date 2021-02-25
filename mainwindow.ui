@@ -661,7 +661,7 @@ background-color: rgb(170, 0, 255, 100);</string>
      </layout>
     </item>
     <item>
-     <spacer name="verticalSpacer">
+     <spacer name="Spacer_UnderCards">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>

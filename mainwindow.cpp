@@ -8,19 +8,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     //----------------
 
+    QSize resolution = QGuiApplication::primaryScreen()->size();
+    fullHd = resolution.width() < 1920 && resolution.height() < 1080? false : true;
     this->showMaximized();
 
     ui->pushButtonInfo->setStyleSheet("QPushButton{background-color: rgba(255,255,255,0);} QPushButton::hover{background-color: rgba(153, 204, 255, 70);}");
     ui->pushButtonInfo->setIcon(QPixmap(":/img/images/info.png"));
     ui->pushButtonInfo->setIconSize(QSize(37, 37));
-
-    connect(ui->pushButtonMondayChange,     SIGNAL(clicked()), this, SLOT(changeCard()));
-    connect(ui->pushButtonTuesdayChange,    SIGNAL(clicked()), this, SLOT(changeCard()));
-    connect(ui->pushButtonWednesdayChange,  SIGNAL(clicked()), this, SLOT(changeCard()));
-    connect(ui->pushButtonThursdayChange,   SIGNAL(clicked()), this, SLOT(changeCard()));
-    connect(ui->pushButtonFridayChange,     SIGNAL(clicked()), this, SLOT(changeCard()));
-    connect(ui->pushButtonSaturdayChange,   SIGNAL(clicked()), this, SLOT(changeCard()));
-    connect(ui->pushButtonSundayChange,     SIGNAL(clicked()), this, SLOT(changeCard()));
 
     QLabel* card[2][7] = { {    ui->labelMonday,    ui->labelTuesday,   ui->labelWednesday, ui->labelThursday,  ui->labelFriday,    ui->labelSaturday,  ui->labelSunday},
                            {    ui->labelMon,       ui->labelTue,       ui->labelWed,       ui->labelThr,       ui->labelFri,       ui->labelSat,       ui->labelSun } };
@@ -29,6 +23,24 @@ MainWindow::MainWindow(QWidget *parent)
                                ui->pushButtonFridayChange,  ui->pushButtonSaturdayChange,   ui->pushButtonSundayChange,     ui->pushButtonWords,
                                ui->pushButtonMenuColor,     ui->pushButtonSetImg,           ui->pushButtonTraining,         ui->pushButtonCheckKnow,
                                ui->pushButtonGetCards };
+
+    for(int i = 0; i < 7; i++)
+        connect(button[i], SIGNAL(clicked()), this, SLOT(changeCard()));
+
+    if(!fullHd)     // if the screen isn't full hd
+    {
+        ui->Layout_BottomCards->setContentsMargins(185, 10, 185, 0);
+        ui->Spacer_UnderCards->changeSize(20, 100);
+        ui->labelPrompt->setFont(QFont("Comic Sans MS", 10));
+
+        for(int i = 0; i < 7; i++) {
+            card[0][i]->setFont(QFont("Comic Sans MS", 14));
+            card[1][i]->setFont(QFont("Comic Sans MS", 10, -1, true));
+        }
+
+        for(auto btn : button)
+            btn->setFont(QFont("Comic Sans MS", 13));
+    }
 
     if(QFile("mfimgc.dll").exists())
         this->setStyleSheet("QMainWindow{background-image: url(mfimgc.dll)}"
@@ -138,7 +150,8 @@ void MainWindow::changeCard()
     for(int i = 0; i < 4 ; i++)
     {
         dynamic_cast<QHBoxLayout*>(currentLayout->children()[1])->insertWidget(i, settingButton[i]);
-        settingButton[i]->setStyleSheet(styleSheetForButton(card->styleSheet(), " font: 15pt Comic Sans MS; "));
+        settingButton[i]->setStyleSheet(styleSheetForButton(card->styleSheet(), " font: " + QString::number(fullHd? 15 : 13)
+                                                            + "pt Comic Sans MS; "));
         settingButton[i]->setVisible(true);
     }
 
@@ -406,8 +419,8 @@ void MainWindow::changeCard()
         *menucolor += QString(menuStSh.readLine()).remove(0,1);
         menuStSh.close();
     }
-
-    recommendations->setGeometry(ui->labelMonday->x(), ui->labelFriday->y(), 220, ui->labelFriday->height());
+\
+    recommendations->setGeometry(ui->labelMonday->x(), ui->labelFriday->y(), fullHd? 220 : 160, ui->labelFriday->height());
     recommendations->setStyleSheet("QListWidget{"+ *menucolor + "font: 12pt Comic Sans MS;} QListWidget::item::selected{" + *menucolor + "border: 1px solid red;} ");
     recommendations->setFocusPolicy(Qt::NoFocus);
     recommendations->setWordWrap(true);
@@ -848,7 +861,8 @@ void MainWindow::on_pushButtonMenuColor_clicked()
 
 void MainWindow::on_pushButtonSetImg_clicked()
 {
-    setImage(this, QSize(1920,1080), "mfimgc.dll");
+    QSize resolution = QGuiApplication::primaryScreen()->size();
+    setImage(this, QSize(resolution.width(), resolution.height()), "mfimgc.dll");
 }
 
 void MainWindow::on_pushButtonGetCards_clicked()
@@ -865,7 +879,8 @@ void MainWindow::on_pushButtonGetCards_clicked()
         }
     }
 
-    QLabel* cards[7] = { ui->labelMonday, ui->labelTuesday, ui->labelWednesday, ui->labelThursday, ui->labelFriday, ui->labelSaturday, ui->labelSunday };
+    QLabel* cards[14] = { ui->labelMonday, ui->labelTuesday, ui->labelWednesday, ui->labelThursday, ui->labelFriday, ui->labelSaturday, ui->labelSunday,
+                        ui->labelMon, ui->labelTue, ui->labelWed, ui->labelThr, ui->labelFri, ui->labelSat, ui->labelSun};
     QPixmap mainImg(":/img/images/fillbycards.png");
     QPainter painter(&mainImg);
     QLabel label(this);
@@ -874,14 +889,25 @@ void MainWindow::on_pushButtonGetCards_clicked()
     label.setAlignment(cards[0]->alignment());
     label.setFont(cards[0]->font());
 
-    label.show();
+    auto tempInvisible = [this, cards, &label](const bool invis)->void {
+        label.show();
+        for(auto card : cards)
+            card->hide();
+        for(auto btn :  {ui->pushButtonMondayChange, ui->pushButtonTuesdayChange, ui->pushButtonWednesdayChange,
+            ui->pushButtonThursdayChange, ui->pushButtonFridayChange, ui->pushButtonSaturdayChange, ui->pushButtonSundayChange})
+            btn->hide();
+    };
+
+    label.show();////////////////////////////////
     for(auto card : cards)
         card->hide();
+    for(auto btn : buttons)
+        btn->hide();
 
     for(int i = 0, shift = 0; i < 7; i++, shift += 240)
     {
         if(this->width() < 1820)
-            label.move(cards[i]->x() - 20 - shift / 8, cards[i]->y());
+            label.move(cards[i]->x() - 20 - shift / 7, cards[i]->y());
         else
             label.move(cards[i]->x(), cards[i]->y());
 
@@ -894,6 +920,8 @@ void MainWindow::on_pushButtonGetCards_clicked()
     label.hide();
     for(auto card : cards)
         card->show();
+    for(auto btn : buttons)
+        btn->show();
 
     painter.end();
     QString path = QFileDialog::getExistingDirectory(this, "Select Location", "/", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);

@@ -154,6 +154,7 @@ private:
     QString getTranslations(const QString, const QLabel*, const int);
     void setEnabledButtons(const bool);
     void clarifyDay(const QPushButton*, QLabel*&, QLabel*&, int&);
+    bool fullHd;
 
 private slots:
     void changeCard();
