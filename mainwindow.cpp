@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     QSize resolution = QGuiApplication::primaryScreen()->size();
     fullHd = resolution.width() < 1920 && resolution.height() < 1080? false : true;
-    // hi laptop )
     this->showMaximized();
 
     ui->pushButtonInfo->setStyleSheet("QPushButton{background-color: rgba(255,255,255,0);} QPushButton::hover{background-color: rgba(153, 204, 255, 70);}");
