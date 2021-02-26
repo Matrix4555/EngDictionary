@@ -671,7 +671,7 @@ background-color: rgb(170, 0, 255, 100);</string>
       <property name="sizeHint" stdset="0">
        <size>
         <width>20</width>
-        <height>220</height>
+        <height>215</height>
        </size>
       </property>
      </spacer>
