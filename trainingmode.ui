@@ -46,7 +46,7 @@
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">color: rgb(255, 51, 0);
+    <string notr="true">color: rgba(255, 51, 0, 255);
 background-color: rgba(0, 0, 127, 150);</string>
    </property>
    <property name="frameShape">

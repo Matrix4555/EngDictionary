@@ -94,10 +94,8 @@ private:
         QDialog* winDialog;
         QLabel* label =             new QLabel(winDialog);
         QLineEdit* input =          new QLineEdit(winDialog);
-        QPushButton* button[4] = {  new QPushButton(winDialog),
-                                    new QPushButton(winDialog),
-                                    new QPushButton(winDialog),
-                                    new QPushButton(winDialog) };
+        QPushButton* button[4] = {  new QPushButton(winDialog), new QPushButton(winDialog),
+                                    new QPushButton(winDialog), new QPushButton(winDialog) };
 
         void create(QWidget* mainWin = nullptr, const QString needTranslate = nullptr)
         {

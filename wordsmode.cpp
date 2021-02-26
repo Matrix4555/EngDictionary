@@ -31,8 +31,8 @@ wordsMode::wordsMode(const bool isFullhd, QWidget *parent) :
         this->setMinimumSize(960, 660);
         this->setMaximumSize(960, 660);
         this->resize(960, 660);
-        ui->listWidget->resize(270, 620);
 
+        ui->listWidget->            resize(270, 620);
         ui->pushButtonCrib->        setGeometry(735, 70, 100, 40);
         ui->pushButtonRunNote->     setGeometry(840, 70, 100, 40);
         ui->pushButtonSetImg->      setGeometry(840, 600, 100, 40);

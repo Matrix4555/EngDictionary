@@ -660,19 +660,20 @@ QString MainWindow::getTranslations(const QString text, const QLabel* card, cons
 
 void MainWindow::setEnabledButtons(const bool on)
 {
-    ui->pushButtonMondayChange->    setEnabled(on);
-    ui->pushButtonTuesdayChange->   setEnabled(on);
-    ui->pushButtonWednesdayChange-> setEnabled(on);
-    ui->pushButtonThursdayChange->  setEnabled(on);
-    ui->pushButtonFridayChange->    setEnabled(on);
-    ui->pushButtonSaturdayChange->  setEnabled(on);
-    ui->pushButtonSundayChange->    setEnabled(on);
-    ui->pushButtonWords->           setEnabled(on);
-    ui->pushButtonMenuColor->       setEnabled(on);
-    ui->pushButtonSetImg->          setEnabled(on);
-    ui->pushButtonTraining->        setEnabled(on);
-    ui->pushButtonCheckKnow->       setEnabled(on);
-    ui->pushButtonGetCards->        setEnabled(on);
+    for(auto btn : {ui->pushButtonMondayChange,
+        ui->pushButtonTuesdayChange,
+        ui->pushButtonWednesdayChange,
+        ui->pushButtonThursdayChange,
+        ui->pushButtonFridayChange,
+        ui->pushButtonSaturdayChange,
+        ui->pushButtonSundayChange,
+        ui->pushButtonWords,
+        ui->pushButtonMenuColor,
+        ui->pushButtonSetImg,
+        ui->pushButtonTraining,
+        ui->pushButtonCheckKnow,
+        ui->pushButtonGetCards})
+        btn->setEnabled(on);
 }
 
 void MainWindow::clarifyDay(const QPushButton* button, QLabel*& card, QLabel*& weekday, int& number)
