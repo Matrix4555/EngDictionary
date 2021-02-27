@@ -96,30 +96,12 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     setTextToCards(card[0]);
+    makeReserveData();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    //--------
-
-    QString reserve;
-
-    QFile wd("mfwd.dll"), wk("mfwk.dll");
-    if(wd.open(QIODevice::ReadOnly | QIODevice::Text) && wk.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        reserve = wd.readAll()+'\n';
-        reserve += wk.readAll();
-        wd.close();
-        wk.close();
-    }
-
-    QFile reserveFile("mfres.dll");
-    if(reserveFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        reserveFile.write(reserve.toUtf8());
-        reserveFile.close();
-    }
 }
 
 void MainWindow::changeCard()
@@ -722,6 +704,27 @@ void MainWindow::clarifyDay(const QPushButton* button, QLabel*& card, QLabel*& w
     }
 }
 
+void MainWindow::makeReserveData()
+{
+    QString reserve;
+
+    QFile wd("mfwd.dll"), wk("mfwk.dll");
+    if(wd.open(QIODevice::ReadOnly | QIODevice::Text) && wk.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        reserve = wd.readAll()+'\n';
+        reserve += wk.readAll();
+        wd.close();
+        wk.close();
+    }
+
+    QFile reserveFile("mfres.dll");
+    if(reserveFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        reserveFile.write(reserve.toUtf8());
+        reserveFile.close();
+    }
+}
+
 void MainWindow::on_pushButtonTraining_clicked()
 {
     QFile file("mfwd.dll");
@@ -926,6 +929,6 @@ void MainWindow::on_pushButtonGetCards_clicked()
 
 void MainWindow::on_pushButtonInfo_clicked()
 {
-    QMessageBox::information(this, "About", "EngDictionary 1.04\n\n"
+    QMessageBox::information(this, "About", "EngDictionary 1.05\n\n"
                                             "Windows teaching application\nthat helps to learn English\nwords with interesting and\ncomfortable functions.");
 }

@@ -85,7 +85,7 @@ background-color: rgba(0, 0, 127, 150);</string>
    </property>
    <property name="styleSheet">
     <string notr="true">background-color: rgba(0, 0, 127, 150);
-color: rgba(0, 210, 255);</string>
+color: rgb(0, 210, 255);</string>
    </property>
    <property name="text">
     <string/>
